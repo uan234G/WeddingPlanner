@@ -1,31 +1,77 @@
 @model List<Wedding>
-<h1>Welcome to Wedding Planner</h1>
-<a href="/logout"><button>Logout</button></a>
+    <style>
+        body{
+            background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80')!important;
+        }
+        h1{
+            color: white;
+        }
+        .navbar{
+            @* color: white !important; *@
+            background-color:rgba(0, 0, 0, 0) !important;
+        }
+        .navbar-brand{
+            color:white !important;
+        }
+        .nav-link{
+            color:white !important;
+        }
+        .atag{
+            color:white;
+        }
+        .atag:hover{
+            text-decoration: none;
+            font-size: 20px;
+            color: pink;
+        }
+        .delete:hover{
+            color:red;
+        }
+        td a{
+            color:green;
+        }
+        .logoutbtn{
+        color:  #bd8067;
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+        }
+        .btn2{
+            color: white;
+            background-color: #bd8067;;
+        }
+    </style>
+<a href="/logout"><button  class="logoutbtn">Logout</button></a>
+<div style="margin-top: 60px;"></div>
+<h1>Wedding Planner</h1>
 
-<table class="table table-striped table-light">
+<table class="table table-striped table-light" style="background-color:rgba(0, 0, 0, 0); color:white;">
     <thead>
-        <tr>
+        <tr style="background-color: #bd8067;">
             <th scope="col">Wedding</th>
-            <th scope="col">Date</th>
-            <th scope="col">Guest</th>
-            <th scope="col">Action</th>
+            <th scope="col">Date & Time</th>
+            <th scope="col">Guests</th>
+            <th scope="col" style="font-weight: bold; color: blue;">Action</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var wedding in Model)
         {
             <tr>
-                <td><a asp-route-wId="@wedding.WeddingId" asp-action="WeddingInfo">@wedding.WedderOne & @wedding.WedderTwo</a> 
+                <td class="changeli"><a class="atag" asp-route-wId="@wedding.WeddingId" asp-action="WeddingInfo">@wedding.WedderOne & @wedding.WedderTwo</a> 
                 </td>
-                <td>@wedding.Date</td>
+                <td>@wedding.Date.ToString("MM/dd/yyyy hh:mm tt")</td>
                 <td>@wedding.Associations.Count</td>
-                    @if (wedding.UserId == ViewBag.UserId)
+                @if (wedding.UserId == ViewBag.UserId)
                 {
-                    <td><a asp-action="Delete" asp-controller="Home" asp-route-wId="@wedding.WeddingId">Delete</a></td>
+                    <td><a class="delete" asp-action="Delete" asp-controller="Home" asp-route-wId="@wedding.WeddingId">Delete</a></td>
                 }
                 else if (wedding.Associations.Any(a => a.UserId == ViewBag.UserId))
                 {
-                    <td><a asp-action="UnRSVP" asp-controller="Home" asp-route-wId="@wedding.WeddingId">Un-RSVP</a></td>
+                    <td><a style="color:red;" asp-action="UnRSVP" asp-controller="Home" asp-route-wId="@wedding.WeddingId">Un-RSVP</a></td>
                 }
                 else
                 {
@@ -35,5 +81,6 @@
         }
     </tbody>
 </table>
-
-<a asp-action="NewWeddingPage"><button>Plan New Wedding</button></a>
+<div style="margin-left: 960px;">
+    <a asp-action="NewWeddingPage"><button class="btn btn2">Plan New Wedding</button></a>
+</div>

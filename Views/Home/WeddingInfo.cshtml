@@ -1,10 +1,121 @@
 @model Wedding
-
-<h1>@Model.WedderOne & @Model.WedderTwo's Wedding | <a href="/dashboard" class="btn btn-primary">Dashboard</a> <a href="/logout" class="btn btn-danger">Log Out</a> </h1>
-
-<h2>Date: @Model.Date</h2>
-<h2>Guests:</h2>
-@foreach(var association in Model.Associations)
-{
-    <h4>@association.Guest.FirstName</h4>
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+    body{
+        background-image: url('https://images.unsplash.com/photo-1519379169146-d4b170447caa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80') !important;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+    }
+    #map{
+    height: 60vh;
+    margin-top: 2rem;
 }
+.list-group{
+    height: 250px;
+    overflow-y: scroll;
+}
+.list-group-item{
+    background-color: rgba(0, 0, 0, 0) !important ;
+}
+@* .list-group-item{
+    color: black !important ;
+} *@
+.navbar{
+    @* color: white !important; *@
+    background-color:rgba(0, 0, 0, 0) !important;
+}
+.btn-primary{
+    background-color:rgba(0, 0, 0, 0) !important;
+}
+</style>
+<a href="/dashboard" class="btn btn-primary">Dashboard</a>
+<h1 style="text-align: center; color:white;">@Model.WedderOne & @Model.WedderTwo</h1>
+@* <h3>Organizer:<p>@Model.Creator.FirstName @Model.Creator.LastName </p></h3> *@
+<hr>
+<div class="row">
+    <div class="col">
+        <div id="map"></div>
+    </div>
+    <div class="col">
+        <div style="text-align: center; color:white;">
+            <p>
+                Together with their families,<br>
+                @Model.WedderOne <br>
+                and <br>
+                @Model.WedderTwo <br>
+                invite you to share in the joy <br>
+                and celebration of their marriage <br>
+                on @Model.Date.ToString("MM/dd/yyyy hh:mm tt")<br>
+                <a href="">@Model.Address</a>
+            </p>
+        </div>
+        <li class="list-group-item disabled">Attending Guests: </li>
+        <ul class="list-group">
+            <li class="list-group-item disabled">Organizer: @Model.Creator.FirstName @Model.Creator.LastName </li>
+            @foreach(var association in Model.Associations)
+            {
+            <li class="list-group-item">@association.Guest.FirstName @association.Guest.LastName</li>
+            }
+        </ul>
+        <br>
+        @if (@Model.UserId == ViewBag.UserId)
+        {
+        <p style="text-align: center;">
+            <a class="btn btn-info" asp-action="RSVP" asp-controller="Home" asp-route-wId="@Model.WeddingId">Delete</a>
+        </p>
+        }
+        else if (@Model.Associations.Any(a => a.UserId == ViewBag.UserId))
+        {
+        <p style="text-align: center;">
+            <a class="btn btn-info" asp-action="UnRSVPdetails" asp-controller="Home" asp-route-wId="@Model.WeddingId">Un-Rsvp</a>
+        </p>
+        }
+        else
+        {
+        <p style="text-align: center;">
+            <a class="btn btn-info" asp-action="RSVPdetails" asp-controller="Home" asp-route-wId="@Model.WeddingId">RSVP</a>
+        </p>
+        }
+    </div>
+</div>
+
+
+
+
+<script src="https://unpkg.com/es6-promise@4.2.4/dist/es6-promise.auto.min.js"></script>
+<script src="https://unpkg.com/@@mapbox/mapbox-sdk/umd/mapbox-sdk.min.js"></script>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoidWFuMjM0IiwiYSI6ImNrYTdkYTlzaTAyZGkycW9qenNpcnVxdXUifQ.dSFNk1W9hEPRT-kK1FCVfA';
+    var mapboxClient = mapboxSdk({ accessToken: mapboxgl.accessToken });
+    mapboxClient.geocoding
+        .forwardGeocode({
+            query: '@Model.Address',
+            autocomplete: false,
+            limit: 1
+        })
+        .send()
+        .then(function (response) {
+            if (
+                response &&
+                response.body &&
+                response.body.features &&
+                response.body.features.length
+            ) {
+                var feature = response.body.features[0];
+
+                var map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v11',
+                    center: feature.center,
+                    zoom: 13
+                });
+                var marker = new mapboxgl.Marker()
+                    .setLngLat([-117.9039373, 33.6672222])
+                    .addTo(map);
+                map.addControl(new mapboxgl.NavigationControl());
+            }
+        });
+</script>

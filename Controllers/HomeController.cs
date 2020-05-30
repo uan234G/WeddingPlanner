@@ -69,7 +69,7 @@ namespace WeddingPlanner.Controllers
                 if (userFromDb == null)
                 {
                     // Create error if email not in db
-                    ModelState.AddModelError("Email", "Invalid Email/Password");
+                    ModelState.AddModelError("LoginEmail", "Invalid Credentials");
                     return View("Index");
                 }
                 var hasher = new PasswordHasher<Login>();
@@ -77,7 +77,7 @@ namespace WeddingPlanner.Controllers
 
                 if (result == 0)
                 {
-                    ModelState.AddModelError("LoginEmail", "Invalid cradentails");
+                    ModelState.AddModelError("LoginEmail", "Invalid Credentials");
                     return View("Index");
 
                 }
@@ -100,7 +100,7 @@ namespace WeddingPlanner.Controllers
             ViewBag.userId = UserSession;
             List<Wedding> AllWeddings = dbContext.Weddings
                 .Include(w => w.Associations)
-                .OrderByDescending(w => w.Date)
+                .OrderBy(w => w.Date)
                 .ToList();
             return View(AllWeddings);
         }
@@ -172,8 +172,32 @@ namespace WeddingPlanner.Controllers
         [HttpGet("Wedding/WeddingInfo/{wId}")]
         public IActionResult WeddingInfo(int wId)
         {
-            var currentWed = dbContext.Weddings.Include(w => w.Associations).ThenInclude(w => w.Guest).FirstOrDefault(w => w.WeddingId == wId);
+            ViewBag.UserId = UserSession;
+            var currentWed = dbContext.Weddings.Include(a => a.Creator).Include(w => w.Associations).ThenInclude(w => w.Guest).FirstOrDefault(w => w.WeddingId == wId);
             return View(currentWed);
+        }
+        [HttpGet("/unrsvp/detailspage/{wId}")]
+        public IActionResult UnRSVPdetails(int wId)
+        {
+            if (UserSession == null)
+                return RedirectToAction("Index");
+            Association NvmNotGoing = dbContext.Associations.FirstOrDefault(asso => asso.WeddingId == wId && asso.UserId == UserSession);
+            dbContext.Associations.Remove(NvmNotGoing);
+            dbContext.SaveChanges();
+            return RedirectToAction("WeddingInfo", new { wId = wId });
+        }
+
+        [HttpGet("/rsvp/detailspage/{wId}")]
+        public IActionResult RSVPdetails(int wId)
+        {
+            if (UserSession == null)
+                return RedirectToAction("Index");
+            Association going = new Association();
+            going.UserId = (int)UserSession;
+            going.WeddingId = wId;
+            dbContext.Associations.Add(going);
+            dbContext.SaveChanges();
+            return RedirectToAction("WeddingInfo", new { wId = wId });
         }
 
         [HttpGet("/logout")]
@@ -181,6 +205,11 @@ namespace WeddingPlanner.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index");
+        }
+        [HttpGet("/register")]
+        public IActionResult RegistrationPartial()
+        {
+            return View();
         }
     }
 }

@@ -30,7 +30,6 @@ namespace WeddingPlanner.Models
         public List<Wedding> WeddingsCreated { get; set; }
         public List<Association> Associations { get; set; }
 
-
     }
 
     [NotMapped]

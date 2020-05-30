@@ -9,7 +9,7 @@ namespace WeddingPlanner.Models
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if ((DateTime)value <= DateTime.Now)
-                return new ValidationResult("Date must be in the future");
+                return new ValidationResult("Date Incorrect, please enter a future date");
             return ValidationResult.Success;
         }
     }
@@ -22,7 +22,7 @@ namespace WeddingPlanner.Models
         [Required]
         public string WedderTwo { get; set; }
         [Required]
-        [FutureDate(ErrorMessage = "Date must be a future date")]
+        [FutureDate(ErrorMessage = "Date Incorrect, please enter a future date")]
         public DateTime Date { get; set; }
         [Required]
         public string Address { get; set; }

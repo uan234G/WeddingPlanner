@@ -1,8 +1,157 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model Login
+<style>
+    @* html{
+  background-color: #333;
+  font-family: "Roboto";
+} *@
+body{
+    background-image: url('https://images.unsplash.com/photo-1492714485642-dd6df6baafa2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80') !important;
+}
+.navbar{
+    background-color:rgba(0, 0, 0, 0) !important;
+}
+/* BOX LOGIN */
+.box{
+	position: relative;
+	@* margin: auto; *@
+	height: 365px;
+    top: 40px;
+	left: 0;
+	z-index: 200;
+	right: 0;
+	width:400px;
+	color:#666;
+	padding:10px 0px;
+	border-radius: 10px;
+	background-color:rgba(0, 0, 0, 0) !important;
+	border-top: 2px solid #C0C0C0;
+	border-bottom: 2px solid #cea764;
+    margin-bottom: 100px;
+}
+.box h1{
+	text-align:center;
+	font-size:30px;
+}
 
-<div class="container">
+.show{
+	display:none;
+}
+
+.box button{
+	background:#e1c99f;
+	border:0;
+	color:#fff;
+	padding:10px;
+	font-size:20px;
+	width:330px;
+	margin:20px auto;
+	display:block;
+	cursor:pointer;
+    -webkit-transition: all 0.4s;
+	transition: all 0.4s;
+	border-radius: 6px;
+}
+
+.box button:active{
+	background:black;
+}
+
+.box button:hover{
+	background:#cea764;
+    -webkit-transition: all 0.4s;
+	transition: all 0.4s;
+}
+
+.box p{
+	font-size:14px;
+	text-align:center;
+}
+
+#textchange{
+	cursor:pointer;
+	color:#666;
+    font-size:15px;
+	text-align:center;
+}
+
+.group 			  { 
+  position:relative; 
+  margin-bottom: 35px; 
+  margin-left: 40px;
+}
+
+.inputMaterial 				{
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  display:block;
+  width:300px;
+  border:none;
+    background-color:rgba(0, 0, 0, 0);
+  border-bottom:0.9px solid #757575;
+}
+
+.inputMaterial:focus 		{ outline:none;}
+
+/* LABEL ======================================= */
+
+label 				 {
+  color:#999; 
+  font-size:18px;
+  font-weight:normal;
+  position:absolute;
+  pointer-events:none;
+  left:5px;
+  top:10px;
+  transition:0.2s ease all; 
+  -moz-transition:0.2s ease all; 
+  -webkit-transition:0.2s ease all;
+}
+
+/* active state */
+.inputMaterial:focus ~ label, .inputMaterial:valid ~ label 		{
+  top:-20px;
+  font-size:14px;
+  color:#cea764;
+}
+
+/* BOTTOM BARS ================================= */
+.bar 	{ position:relative; display:block; width:315px; }
+.bar:before, .bar:after 	{
+  content:'';
+  height:2px; 
+  width:0;
+  bottom:1px; 
+  position:absolute;
+  background:#e1c99f; 
+  transition:0.2s ease all; 
+  -moz-transition:0.2s ease all; 
+  -webkit-transition:0.2s ease all;
+}
+.bar:before {
+  left:50%;
+}
+.bar:after {
+  right:50%; 
+}
+
+/* active state */
+.inputMaterial:focus ~ .bar:before, .inputMaterial:focus ~ .bar:after {
+  width:50%;
+}
+
+
+/* active state */
+.inputMaterial:focus ~ .highlight {
+  -webkit-animation:inputHighlighter 0.3s ease;
+  -moz-animation:inputHighlighter 0.3s ease;
+  animation:inputHighlighter 0.3s ease;
+}
+</style>
+
+@* <div class="container">
     <div class="row">
         <div class="col">
             <h1>Registration</h1>
@@ -13,4 +162,55 @@
             <partial name="Login"></partial>
         </div>
     </div>
+</div> *@
+<div class="box">
+    <h1 id="logintoregister">Login</h1>
+    <form asp-action="Login" asp-controller="Home" method="Post">
+        <div class="group">   
+            <span style="font-size: 12px;" class="text-danger font-weight-bold" asp-validation-for="LoginEmail"></span>
+            <input asp-for="LoginEmail" class="inputMaterial" type="text">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Email</label>
+        </div>
+        <div class="group">      
+            <span style="font-size: 12px;" class="text-danger font-weight-bold" asp-validation-for="LoginPassword"></span>
+            <input asp-for="LoginPassword" class="inputMaterial" type="password">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Password</label>
+        </div>
+
+        <button type="submit" id="buttonlogintoregister">Login</button>
+        <p id="plogintoregister">Don't Have an Account? </p><p><a id="textchange" href="/register"> Register</a></p>
+    </form>
 </div>
+
+
+@* <script>
+    var cont = 0;
+
+function register(){
+
+     cont++;
+		
+		if(cont==1){
+		 	$('.box').animate({height:'650px'}, 550);
+			$('.show').css('display','block');
+			$('#logintoregister').text('Register');
+			$('#buttonlogintoregister').text('Register');
+			$('#plogintoregister').text("Already Registered");
+			$('#textchange').text('Log In');
+		}
+		else
+		{
+			$('.show').css('display','none');
+			$('.box').animate({height:'365px'}, 550);
+			$('#logintoregister').text('Login');
+			$('#buttonlogintoregister').text('Login');
+			$('#plogintoregister').text("Don't Have and Account?");
+			$('#textchange').text('Register');
+			cont = 0;
+		}
+}
+</script> *@
